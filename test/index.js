@@ -1,6 +1,6 @@
 const path = require('path');
 const assert = require('assert');
-const loadConfig = require('../index').loadConfig;
+const loadConfig = require('../index');
 const config = require('../conf/config.defaults.json');
 
 describe('index.js', function() {

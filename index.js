@@ -55,5 +55,5 @@ const loadConfig = (opts, callback) => {
   return cfg;
 };
 
-exports.loadConfig = loadConfig;
+module.exports = loadConfig;
 
