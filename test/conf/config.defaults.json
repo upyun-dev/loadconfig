@@ -1,0 +1,11 @@
+{
+  "test": {
+    "string": "value"
+  },
+  "test2": {
+    "array": ["array1", "array2"],
+    "obj": {
+      "num": 123
+    }
+  }
+}
