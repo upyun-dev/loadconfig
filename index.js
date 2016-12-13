@@ -1,4 +1,3 @@
-const assert = require('assert');
 const deepExtend = require('deep-extend');
 const syncRequest = require('sync-request');
 const winston = require('winston');
