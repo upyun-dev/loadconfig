@@ -3,7 +3,7 @@ const deepExtend = require('deep-extend');
 const syncRequest = require('sync-request');
 const winston = require('winston');
 const loadEnv = require('./lib/load-env');
-
+const path = require('path');
 const env = process.env;
 
 const loadConfig = (opts, callback) => {
@@ -15,11 +15,11 @@ const loadConfig = (opts, callback) => {
       'production',
       'development'
     ],
-    name: 'loadConfig'
+    name: ''
   }, opts || {});
 
-  // 后续修改
-  opts.pattern = './' + opts.pattern;
+  opts.pattern = path.join(process.cwd(), opts.pattern);
+  if (!opts.name) opts.name = require(path.join(process.cwd(), 'package.json')).name;
 
   let cfg = require(opts.pattern.replace(/%{env}/, 'defaults'));
   // 环境变量最好跟着 defaults 文件导入, 避免环境变量名被污染
