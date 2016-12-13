@@ -8,7 +8,7 @@ const env = process.env;
 
 const loadConfig = (opts, callback) => {
   opts = deepExtend({
-    pattern: 'config.%{env}.json',
+    pattern: 'conf/config.%{env}.json',
     url: '',
     stages: [
       'test',
