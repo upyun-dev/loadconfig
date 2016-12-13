@@ -1,11 +1,13 @@
 const path = require('path');
+const assert = require('assert');
 const loadConfig = require('../index').loadConfig;
+const config = require('../conf/config.defaults.json');
 
 describe('index.js', function() {
   describe('#loadConfig()', function() {
-    it('', function() {
-      console.log(path.resolve('.'));
-      loadConfig();
+    it('should return config', function() {
+      let cfg = loadConfig();
+      assert.deepEqual(cfg, config);
     });
   });
 });
