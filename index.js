@@ -5,6 +5,11 @@ const loadEnv = require('./lib/load-env');
 const path = require('path');
 const env = process.env;
 
+// 避免污染源数据
+const cloneJSON = (obj) => {
+  return JSON.parse(JSON.stringify(obj));
+};
+
 const loadConfig = (opts, callback) => {
   opts = deepExtend({
     pattern: 'conf/config.%{env}.json',
@@ -20,12 +25,12 @@ const loadConfig = (opts, callback) => {
   opts.pattern = path.join(process.cwd(), opts.pattern);
   if (!opts.name) opts.name = require(path.join(process.cwd(), 'package.json')).name;
 
-  let cfg = require(opts.pattern.replace(/%{env}/, 'defaults'));
+  let cfg = cloneJSON(require(opts.pattern.replace(/%{env}/, 'defaults')));
   // 环境变量最好跟着 defaults 文件导入, 避免环境变量名被污染
   let envCfg = loadEnv(cfg, { name: opts.name });
 
   try {
-    cfg = deepExtend(cfg, require(opts.pattern.replace(/\.%{env}/, '')));
+    cfg = deepExtend(cfg, cloneJSON(require(opts.pattern.replace(/\.%{env}/, ''))));
   } catch (e) { }
 
   // stage override
@@ -33,7 +38,7 @@ const loadConfig = (opts, callback) => {
     let dir;
     try {
       dir = opts.pattern.replace(/%{env}/, env.NODE_ENV);
-      cfg = deepExtend(cfg, require(dir));
+      cfg = deepExtend(cfg, cloneJSON(require(dir)));
     } catch (e) {
       winston.log('info', dir, 'not a regular file');
     }
