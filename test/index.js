@@ -38,6 +38,25 @@ describe('index.js', () => {
         assert.deepEqual(cfg, defaultsConfig);
       });
     });
+    context('when environmental variables is array', () => {
+      let defaultsConfig;
+      before(() => {
+        process.env.LOADCONFIG_TEST2_ARRAY = '1,2,3';
+        defaultsConfig = require('./conf/config.defaults.json');
+      });
+      after(() => {
+        delete require.cache['./conf/config.defaults.json'];
+        delete process.env.LOADCONFIG_TEST2_ARRAY;
+      });
+      it('should return config', () => {
+        let cfg = loadConfig({
+          pattern: 'test/conf/config.%{env}.json'
+        });
+        assert.deepEqual(cfg.test2.array, ['1', '2', '3']);
+        defaultsConfig.test2.array = ['1', '2', '3'];
+        assert.deepEqual(cfg, defaultsConfig);
+      });
+    });
     // sync-request 使用的是 child_process.spawnSync，好像没法 nock
     // context('when exists url', () => {
     //   let defaultsConfig;
