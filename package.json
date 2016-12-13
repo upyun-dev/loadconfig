@@ -1,0 +1,29 @@
+{
+  "name": "loadconfig",
+  "version": "0.0.1",
+  "description": "load configure files",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/upyun-dev/loadconfig.git"
+  },
+  "keywords": [
+    "config"
+  ],
+  "author": "taevas (yu.zheng@upai.com)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/upyun-dev/loadconfig/issues"
+  },
+  "homepage": "https://github.com/upyun-dev/loadconfig#readme",
+  "dependencies": {
+    "deep-extend": "^0.4.1",
+    "isarray": "^2.0.1",
+    "isobject": "^3.0.0",
+    "sync-request": "^3.0.1",
+    "winston": "^2.3.0"
+  }
+}
