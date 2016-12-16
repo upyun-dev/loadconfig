@@ -1,17 +1,20 @@
 const assert = require('assert');
-// const nock = require('nock');
+const winston = require('winston');
 const loadConfig = require('../index');
+
+winston.remove(winston.transports.Console);
 
 describe('index.js', () => {
   describe('#loadConfig()', () => {
+    let defaultsConfig = require('./conf/config.defaults.json');
+    it('should return error if pattern is invalid', () => {
+      assert.throws(function() {
+        let a = loadConfig({
+          pattern: 'test/test.${env}.json'
+        });
+      }, Error);
+    });
     context('when no another configure', () => {
-      let defaultsConfig;
-      before(() => {
-        defaultsConfig = require('./conf/config.defaults.json');
-      });
-      after(() => {
-        delete require.cache['./conf/config.defaults.json'];
-      });
       it('should return config', () => {
         let cfg = loadConfig({
           pattern: 'test/conf/config.%{env}.json'
@@ -20,13 +23,10 @@ describe('index.js', () => {
       });
     });
     context('when exists environmental variables', () => {
-      let defaultsConfig;
       before(() => {
         process.env.LOADCONFIG_TEST_STRING = '123';
-        defaultsConfig = require('./conf/config.defaults.json');
       });
       after(() => {
-        delete require.cache['./conf/config.defaults.json'];
         delete process.env.LOADCONFIG_TEST_STRING;
       });
       it('should return config', () => {
@@ -39,13 +39,10 @@ describe('index.js', () => {
       });
     });
     context('when environmental variables is array', () => {
-      let defaultsConfig;
       before(() => {
         process.env.LOADCONFIG_TEST2_ARRAY = '1,2,3';
-        defaultsConfig = require('./conf/config.defaults.json');
       });
       after(() => {
-        delete require.cache['./conf/config.defaults.json'];
         delete process.env.LOADCONFIG_TEST2_ARRAY;
       });
       it('should return config', () => {
@@ -57,30 +54,40 @@ describe('index.js', () => {
         assert.deepEqual(cfg, defaultsConfig);
       });
     });
-    // sync-request 使用的是 child_process.spawnSync，好像没法 nock
-    // context('when exists url', () => {
-    //   let defaultsConfig;
-    //   let url = 'http://test.com';
-    //   before(() => {
-    //     defaultsConfig = require('./conf/config.defaults.json');
-    //     nock(url)
-    //       .get('/')
-    //       .times(1)
-    //       .reply(200, JSON.stringify({ test2: { obj: { num: 1234 } } }));
-    //   });
-    //   after(() => {
-    //     delete require.cache['./conf/config.defaults.json'];
-    //   });
-    //   it('should return config', () => {
-    //     let cfg = loadConfig({
-    //       pattern: 'test/conf/config.%{env}.json',
-    //       url: url
-    //     });
-    //     assert.notEqual(cfg.test2.obj.num, 1234);
-    //     defaultsConfig.test2.obj.num = 1234;
-    //     assert.deepEqual(cfg, defaultsConfig);
+    context('when environmental variables is array and invalid', () => {
+      before(() => {
+        process.env.LOADCONFIG_TEST2_ARRAY = '';
+      });
+      after(() => {
+        delete process.env.LOADCONFIG_TEST2_ARRAY;
+      });
+      it('should return config', () => {
+        let cfg = loadConfig({
+          pattern: 'test/conf/config.%{env}.json'
+        });
+        assert.deepEqual(cfg, defaultsConfig);
+      });
+    });
 
-    //   });
-    // });
+    context('when arguments with callback', () => {
+      it('should return error if pattern is invalid', (done) => {
+        loadConfig({
+          pattern: 'test/test.${env}.json'
+        }, (err) => {
+          assert.ok(err);
+          done();
+        });
+      });
+
+      it('should return config', (done) => {
+        loadConfig({
+          pattern: 'test/conf/config.%{env}.json'
+        }, (err, config) => {
+          assert.ifError(err);
+          assert.ok(config, defaultsConfig);
+          done();
+        });
+      });
+    });
   });
 });
