@@ -24,8 +24,14 @@ const loadConfig = (opts, callback) => {
 
   opts.pattern = path.join(process.cwd(), opts.pattern);
   if (!opts.name) opts.name = require(path.join(process.cwd(), 'package.json')).name;
-
-  let cfg = cloneJSON(require(opts.pattern.replace(/%{env}/, 'defaults')));
+  let cfg;
+  try {
+    cfg = cloneJSON(require(opts.pattern.replace(/%{env}/, 'defaults')));
+  } catch (e) {
+    if (callback) callback(e);
+    else throw e;
+    return;
+  }
   // 环境变量最好跟着 defaults 文件导入, 避免环境变量名被污染
   let envCfg = loadEnv(cfg, { name: opts.name });
 
@@ -56,7 +62,7 @@ const loadConfig = (opts, callback) => {
   }
   // Env override
   deepExtend(cfg, envCfg);
-  return cfg;
+  return callback && callback(null, cfg) || cfg;
 };
 
 module.exports = loadConfig;
