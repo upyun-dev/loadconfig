@@ -6,7 +6,7 @@
 
 ```
 $ npm install https://github.com/upyun-dev/loadconfig.git --save
-$ mkdir config
+$ mkdir conf
 $ vi conf/config.defaults.json
 ```
 
