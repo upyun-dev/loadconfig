@@ -22,8 +22,8 @@ const loadConfig = (opts, callback) => {
     name: ''
   }, opts || {});
 
-  opts.pattern = path.join(process.cwd(), opts.pattern);
-  if (!opts.name) opts.name = require(path.join(process.cwd(), 'package.json')).name;
+  opts.pattern = path.join(env.PWD, opts.pattern);
+  if (!opts.name) opts.name = require(path.join(env.PWD, 'package.json')).name;
   let cfg;
   try {
     cfg = cloneJSON(require(opts.pattern.replace(/%{env}/, 'defaults')));
