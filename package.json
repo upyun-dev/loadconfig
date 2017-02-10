@@ -23,6 +23,7 @@
   "homepage": "https://github.com/upyun-dev/loadconfig#readme",
   "dependencies": {
     "deep-extend": "^0.4.1",
+    "dotenv": "^4.0.0",
     "isarray": "^2.0.1",
     "isobject": "^3.0.0",
     "sync-request": "^3.0.1",
