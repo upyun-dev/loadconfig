@@ -37,7 +37,9 @@ const loadConfig = (opts, callback) => {
 
   try {
     cfg = deepExtend(cfg, cloneJSON(require(opts.pattern.replace(/\.%{env}/, ''))));
-  } catch (e) { }
+  } catch (e) {
+    if (e instanceof SyntaxError) winston.log('info', e);
+  }
 
   // stage override
   if (~opts.stages.indexOf(env.NODE_ENV)) {
