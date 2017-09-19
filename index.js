@@ -22,8 +22,17 @@ const loadConfig = (opts, callback) => {
     name: ''
   }, opts || {});
 
-  opts.pattern = path.join(env.PWD, opts.pattern);
-  if (!opts.name) opts.name = require(path.join(env.PWD, 'package.json')).name;
+  const isAbsolute = path.isAbsolute(opts.pattern);
+
+  opts.pattern = isAbsolute ? opts.pattern : path.join(env.PWD, opts.pattern);
+
+  if (!opts.name) {
+    try {
+      opts.name = require(path.join(env.PWD, 'package.json')).name;
+    } catch (e) {
+      winston.log('warn', 'Failed to require package.json data');
+    }
+  }
   let cfg;
   try {
     cfg = cloneJSON(require(opts.pattern.replace(/%{env}/, 'defaults')));
@@ -32,8 +41,13 @@ const loadConfig = (opts, callback) => {
     else throw e;
     return;
   }
-  // 环境变量最好跟着 defaults 文件导入, 避免环境变量名被污染
-  let envCfg = loadEnv(cfg, { name: opts.name });
+  let envCfg = {};
+  if (opts.name) {
+    // 环境变量最好跟着 defaults 文件导入, 避免环境变量名被污染
+    envCfg = loadEnv(cfg, { name: opts.name });
+  } else {
+    winston.log('warn', 'Can not load environment. please check your project name');
+  }
 
   try {
     cfg = deepExtend(cfg, cloneJSON(require(opts.pattern.replace(/\.%{env}/, ''))));
@@ -48,7 +62,7 @@ const loadConfig = (opts, callback) => {
       dir = opts.pattern.replace(/%{env}/, env.NODE_ENV);
       cfg = deepExtend(cfg, cloneJSON(require(dir)));
     } catch (e) {
-      winston.log('info', dir, 'not a regular file');
+      winston.log('warn', dir + 'not a regular file');
     }
   }
 

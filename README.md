@@ -53,6 +53,8 @@ db.connect(config.redis, ...);
 
 配置在 `config/conf.json` 文件中修改及补充.
 
+`pattern` 支持绝对路径。
+
 ### name
 
 不给参数 name 传值, 并且在项目 project 内使用
@@ -66,3 +68,5 @@ db.connect(config.redis, ...);
 ```
 
 如果想通过环境变量修改 value, 则需要传环境变量 `export PROJECT_TEST_KEY=balabala`
+
+当 `pattern` 使用绝对路径，无法从程序运行根目录查询 `package.json` 的项目名称 `name` 环境变量

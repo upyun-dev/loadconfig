@@ -1,5 +1,6 @@
 const assert = require('assert');
 const winston = require('winston');
+const path = require('path');
 const loadConfig = require('../index');
 
 winston.remove(winston.transports.Console);
@@ -9,7 +10,7 @@ describe('index.js', () => {
     let defaultsConfig = require('./conf/config.defaults.json');
     it('should return error if pattern is invalid', () => {
       assert.throws(function() {
-        let a = loadConfig({
+        loadConfig({
           pattern: 'test/test.${env}.json'
         });
       }, Error);
@@ -82,6 +83,19 @@ describe('index.js', () => {
       it('should return config', (done) => {
         loadConfig({
           pattern: 'test/conf/config.%{env}.json'
+        }, (err, config) => {
+          assert.ifError(err);
+          assert.ok(config, defaultsConfig);
+          done();
+        });
+      });
+    });
+
+    context('when pattern is absolute', () => {
+      it('should return config', (done) => {
+
+        loadConfig({
+          pattern: path.resolve(__dirname, './conf/config.%{env}.json')
         }, (err, config) => {
           assert.ifError(err);
           assert.ok(config, defaultsConfig);
